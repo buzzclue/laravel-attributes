@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Rinvex\Attributes\Providers;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Rinvex\Attributes\Models\Attribute;
-use Rinvex\Support\Traits\ConsoleTools;
+use Rinvex\Attributes\Support\Traits\ConsoleTools;
 use Rinvex\Attributes\Models\AttributeEntity;
 use Rinvex\Attributes\Console\Commands\MigrateCommand;
 use Rinvex\Attributes\Console\Commands\PublishCommand;
@@ -55,9 +56,14 @@ class AttributesServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Add strip_tags validation rule (previously provided by rinvex/laravel-support)
+        Validator::extend('strip_tags', function ($attribute, $value): bool {
+            return is_string($value) && strip_tags($value) === $value;
+        }, 'The :attribute may not contain HTML tags.');
+
         // Publish Resources
         $this->publishesConfig('rinvex/laravel-attributes');
-        $this->publishesMigrations('rinvex/laravel-attributes');
+        $this->publishPackageMigrations('rinvex/laravel-attributes');
         ! $this->autoloadMigrations('rinvex/laravel-attributes') || $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
     }
 }

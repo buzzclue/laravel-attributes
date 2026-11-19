@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](CONTRIBUTING.md).
 
 
+## [v7.0.0] - 2026-11-19
+- Community fork: add Laravel 13 support (requires PHP 8.3+, `illuminate/*` ^13.0)
+- Remove the archived `rinvex/laravel-support` dependency; the required traits (`ValidatingTrait`, `HasTranslations`, `HasSlug`, `ConsoleTools`) now live in `Rinvex\Attributes\Support\Traits`
+- The `strip_tags` validation rule is now registered by `AttributesServiceProvider`
+- Replace abandoned `jeremeamia/superclosure` with `laravel/serializable-closure`
+- Rename `ConsoleTools::publishesMigrations()` to `publishPackageMigrations()` (it clashed with `ServiceProvider::publishesMigrations()` in Laravel 11+)
+- Update `spatie/*` dependencies and the `getTranslations()` signature
+- Port the test suite to PHPUnit 12 and Orchestra Testbench 11
+
 ## [v6.1.0] - 2022-02-14
 - Update composer dependencies to Laravel v9
 - FIX trash multiple attribute types in one save (#101)

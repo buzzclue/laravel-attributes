@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Rinvex\Attributes\Tests\Feature;
 
+use Orchestra\Testbench\TestCase as Orchestra;
 use Rinvex\Attributes\Models\Attribute;
-use Rinvex\Attributes\Tests\Stubs\User;
-use Rinvex\Support\Providers\SupportServiceProvider;
+use Rinvex\Attributes\Models\Type\Boolean;
+use Rinvex\Attributes\Models\Type\Datetime;
+use Rinvex\Attributes\Models\Type\Integer;
+use Rinvex\Attributes\Models\Type\Text;
+use Rinvex\Attributes\Models\Type\Varchar;
 use Rinvex\Attributes\Providers\AttributesServiceProvider;
+use Rinvex\Attributes\Tests\Stubs\User;
 
-class TestCase extends \Orchestra\Testbench\TestCase
+abstract class TestCase extends Orchestra
 {
     protected function setUp(): void
     {
@@ -17,22 +22,21 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         $this->artisan('migrate', ['--database' => 'testing']);
         $this->loadLaravelMigrations('testing');
-        $this->withFactories(__DIR__.'/Factories');
 
         // Registering the core type map
         Attribute::typeMap([
-            'text' => \Rinvex\Attributes\Models\Type\Text::class,
-            'bool' => \Rinvex\Attributes\Models\Type\Boolean::class,
-            'integer' => \Rinvex\Attributes\Models\Type\Integer::class,
-            'varchar' => \Rinvex\Attributes\Models\Type\Varchar::class,
-            'datetime' => \Rinvex\Attributes\Models\Type\Datetime::class,
+            'text' => Text::class,
+            'bool' => Boolean::class,
+            'integer' => Integer::class,
+            'varchar' => Varchar::class,
+            'datetime' => Datetime::class,
         ]);
 
         // Push your entity fully qualified namespace
         app('rinvex.attributes.entities')->push(User::class);
     }
 
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
@@ -42,11 +46,17 @@ class TestCase extends \Orchestra\Testbench\TestCase
         ]);
     }
 
-    protected function getPackageProviders($app)
+    /**
+     * @return array<int, class-string>
+     */
+    protected function getPackageProviders($app): array
     {
-        return [
+        return array_values(array_filter([
             AttributesServiceProvider::class,
-            SupportServiceProvider::class,
-        ];
+            // spatie/laravel-sluggable >= 5 registers its config via a provider
+            class_exists(\Spatie\Sluggable\SluggableServiceProvider::class)
+                ? \Spatie\Sluggable\SluggableServiceProvider::class
+                : null,
+        ]));
     }
 }

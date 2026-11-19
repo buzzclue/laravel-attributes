@@ -4,45 +4,36 @@ declare(strict_types=1);
 
 namespace Rinvex\Attributes\Tests\Feature;
 
-use ReflectionClass;
-use PHPUnit\Framework\TestCase;
 use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use Rinvex\Attributes\Providers\AttributesServiceProvider;
 
 class ServiceProviderTest extends TestCase
 {
-    /** Get the service provider class. */
+    /** @return class-string<ServiceProvider> */
     protected function getServiceProviderClass(): string
     {
         return AttributesServiceProvider::class;
     }
 
-    /** @test */
-    public function it_is_a_service_provider()
+    #[Test]
+    public function it_is_a_service_provider(): void
     {
-        $class = $this->getServiceProviderClass();
+        $reflection = new ReflectionClass($this->getServiceProviderClass());
 
-        $reflection = new ReflectionClass($class);
-
-        $provider = new ReflectionClass(ServiceProvider::class);
-
-        $msg = "Expected class '{$class}' to be a service provider.";
-
-        $this->assertTrue($reflection->isSubclassOf($provider), $msg);
+        $this->assertTrue($reflection->isSubclassOf(ServiceProvider::class));
     }
 
-    /** @test */
-    public function it_has_provides_method()
+    #[Test]
+    public function it_has_provides_method(): void
     {
         $class = $this->getServiceProviderClass();
-        $reflection = new ReflectionClass($class);
 
-        $method = $reflection->getMethod('provides');
-        $method->setAccessible(true);
+        $provider = new $class(new Container());
 
-        $msg = "Expected class '{$class}' to provide a valid list of services.";
-
-        $this->assertIsArray($method->invoke(new $class(new Container())), $msg);
+        $this->assertIsArray($provider->provides());
     }
 }

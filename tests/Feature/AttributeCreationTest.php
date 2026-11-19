@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Rinvex\Attributes\Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
+use Rinvex\Attributes\Models\Attribute;
 use Rinvex\Attributes\Tests\Stubs\User;
 
 class AttributeCreationTest extends TestCase
 {
-    /** @test */
-    public function it_creates_a_new_attribute()
+    #[Test]
+    public function it_creates_a_new_attribute(): void
     {
         $attribute = $this->createAttribute();
 
@@ -17,8 +19,8 @@ class AttributeCreationTest extends TestCase
         $this->assertDatabaseHas('attribute_entity', ['attribute_id' => $attribute->id, 'entity_type' => User::class]);
     }
 
-    /** @test */
-    public function it_ensures_snake_case_slugs()
+    #[Test]
+    public function it_ensures_snake_case_slugs(): void
     {
         $attribute = $this->createAttribute(['name' => 'Foo Bar']);
 
@@ -26,16 +28,16 @@ class AttributeCreationTest extends TestCase
         $this->assertDatabaseHas('attributes', ['slug' => 'foo_bar', 'type' => 'integer']);
     }
 
-    /** @test */
-    public function it_ensures_snake_case_slugs_even_if_dashed_slugs_provided()
+    #[Test]
+    public function it_ensures_snake_case_slugs_even_if_dashed_slugs_provided(): void
     {
         $attribute = $this->createAttribute(['slug' => 'foo-bar']);
 
         $this->assertEquals('foo_bar', $attribute->slug);
     }
 
-    /** @test */
-    public function it_ensures_unique_slugs()
+    #[Test]
+    public function it_ensures_unique_slugs(): void
     {
         $this->createAttribute(['name' => 'foo']);
         $this->createAttribute(['name' => 'foo']);
@@ -43,8 +45,8 @@ class AttributeCreationTest extends TestCase
         $this->assertDatabaseHas('attributes', ['slug' => 'foo_1']);
     }
 
-    /** @test */
-    public function it_ensures_unique_slugs_even_if_slugs_explicitly_provided()
+    #[Test]
+    public function it_ensures_unique_slugs_even_if_slugs_explicitly_provided(): void
     {
         $this->createAttribute(['slug' => 'foo']);
         $this->createAttribute(['slug' => 'foo']);
@@ -52,8 +54,12 @@ class AttributeCreationTest extends TestCase
         $this->assertDatabaseHas('attributes', ['slug' => 'foo_1']);
     }
 
-    protected function createAttribute($attributes = [])
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    protected function createAttribute(array $attributes = []): Attribute
     {
+        /** @var Attribute */
         return app('rinvex.attributes.attribute')->create(array_merge([
             'type' => 'integer',
             'name' => 'Count',
