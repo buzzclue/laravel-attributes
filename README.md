@@ -1,8 +1,11 @@
 # Rinvex Attributes
 
-⚠️ **This package is abandoned and no longer maintained. No replacement package was suggested.** ⚠️
-
-👉 [Contact me if you are interested in maintaining it!](https://twitter.com/Omranic)
+> **Maintained fork (buzzclue), Laravel 13.** The upstream package is abandoned. This fork (`v7.x`) supports
+> Laravel 13 / PHP 8.3+. It inlines `rinvex/laravel-support` and replaces `superclosure` with `laravel/serializable-closure`.
+>
+> **Caveat:** Laravel 12 added `Illuminate\Database\Eloquent\Model::hasAttribute()`, which collides with this
+> package's static `Model::hasAttribute($key, $value)` macro. Call it on a query builder instead:
+> `Requester::query()->hasAttribute('company', 'Acme')`.
 
 **Rinvex Attributes** is a robust, intelligent, and integrated Entity-Attribute-Value model (EAV) implementation for Laravel Eloquent, with powerful underlying for managing entity attributes implicitly as relations with ease. It utilizes the power of Laravel Eloquent, with smooth and seamless integration.
 
